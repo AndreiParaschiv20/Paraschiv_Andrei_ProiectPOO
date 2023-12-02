@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include<fstream>
 
 using namespace std;
 
@@ -479,6 +480,26 @@ public:
 		}
 	}
 
+	friend istream& operator>>(istream& citire, Camara& cam) {
+		cout << "Numarul de borcane din camara: ";
+		citire >> cam.nrBorcane;
+
+		cout << "Latimea camerei: ";
+		citire >> cam.latime;
+
+		cout << "Tipurile de borcane (separate prin spatii): ";
+		if (cam.tipBorcan != nullptr) {
+			delete[] cam.tipBorcan;
+		}
+		cam.tipBorcan = new string[cam.nrBorcane];
+		for (int i = 0; i < cam.nrBorcane; i++) {
+			citire >> cam.tipBorcan[i];
+		}
+
+		return citire;
+	}
+
+
 
 	friend  bool operator==(const Camara& c2, const Camara& c3) {
 		if (c2.nrBorcane != c3.nrBorcane) {
@@ -620,6 +641,143 @@ string gettipBorcan(const Camara& b) {
 	return aux2;
 }
 int Camara::nrCamara = 0;
+
+class Rulota :public Casa {
+private:
+	char* marca;
+	float inaltimeRulota;
+public:
+	Rulota() :Casa() {
+		this->inaltimeRulota = 2.6;
+		this->marca = new char[strlen("Mercedes") + 1];
+		strcpy_s(this->marca, strlen("Mercedes") + 1, "Mercedes");
+
+	}
+	Rulota(const char* marca, float inaltimeRulota) :Casa() {
+		this->inaltimeRulota = inaltimeRulota;
+		this->marca = new char[strlen(marca) + 1];
+		strcpy_s(this->marca, strlen(marca) + 1, marca);
+	}
+	Rulota(const Rulota& r) :Casa(r) {
+		this->inaltimeRulota = r.inaltimeRulota;
+		this->marca = new char[strlen(r.marca) + 1];
+		strcpy_s(this->marca, strlen(r.marca) + 1, r.marca);
+	}
+	~Rulota() {
+		if (this->marca) {
+			delete[]this->marca;
+		}
+	}
+
+	Rulota operator=(const Rulota& r) {
+		if (this != &r) {
+			Casa::operator=(r);
+			this->inaltimeRulota = r.inaltimeRulota;
+			if (this->marca) {
+				delete[]this->marca;
+			}
+			this->marca = new char[strlen(r.marca) + 1];
+			strcpy_s(this->marca, strlen(r.marca) + 1, r.marca);
+		}
+		return *this;
+	}
+	friend ostream& operator<<(ostream& rul, const Rulota& r) {
+		rul << (Casa)r;
+		rul << r.marca << " ";
+		rul << r.inaltimeRulota << endl;
+		return rul;
+	}
+
+	friend istream& operator>>(istream& rl,  Rulota& r) {
+		rl >> (Casa&)r;
+		cout << "Inaltimea rulotei este: ";
+		rl >> r.inaltimeRulota;
+		if (r.marca) {
+			delete[]r.marca;
+		}
+		cout << "Marca rulotei este: ";
+		char buffer[20];
+		rl >> buffer;
+		r.marca = new char[strlen(buffer) + 1];
+		strcpy_s(r.marca, strlen(buffer) + 1, buffer);
+		return rl;
+		
+
+	}
+
+   };
+
+class Beci :public Camara {
+private:
+	float adancime;
+	int nrRafturi;
+	char* culoareRaft;
+public:
+	Beci() :Camara() {
+		this->adancime = 2.1;
+		this->nrRafturi = 30;
+		this->culoareRaft = new char[strlen("Maro") + 1];
+		strcpy_s(this->culoareRaft, strlen("Maro") + 1, "Maro");
+
+	}
+	Beci(const char* culoareRaft, float adancime,int nrRafturi) :Camara() {
+		this->adancime = adancime;
+		this->nrRafturi = nrRafturi;
+		this->culoareRaft = new char[strlen(culoareRaft) + 1];
+		strcpy_s(this->culoareRaft, strlen(culoareRaft) + 1, culoareRaft);
+	}
+	Beci(const Beci& b) : Camara(b) {
+		this->adancime = b.adancime;
+		this->nrRafturi = b.nrRafturi;
+		this->culoareRaft = new char[strlen(b.culoareRaft) + 1];
+		strcpy_s(this->culoareRaft, strlen(b.culoareRaft) + 1, b.culoareRaft);
+	}
+	~Beci() {
+		if (this->culoareRaft) {
+			delete[]this->culoareRaft;
+		}
+	}
+
+	Beci operator=(const Beci& b) {
+		if (this != &b) {
+			Camara::operator=(b);
+			this->adancime = b.adancime;
+			this->nrRafturi = b.nrRafturi;
+			if (this->culoareRaft) {
+				delete[]this->culoareRaft;
+			}
+			this->culoareRaft = new char[strlen(b.culoareRaft) + 1];
+			strcpy_s(this->culoareRaft, strlen(b.culoareRaft) + 1, b.culoareRaft);
+		}
+		return *this;
+	}
+	friend ostream& operator<<(ostream& geam, const Beci& bc) {
+		geam << (Camara)bc;
+		geam << bc.adancime << " ";
+		geam << bc.nrRafturi << " ";
+		geam << bc.culoareRaft << endl;
+		return geam;
+	}
+
+	friend istream& operator>>(istream& usa, Beci& be) {
+		usa >> (Camara&)be;
+		cout << "Adancimea la care se afla beciul: ";
+		usa >> be.adancime;
+		cout << "Nr de rafturi din cama este: ";
+		usa >> be.nrRafturi;
+		if (be.culoareRaft) {
+			delete[]be.culoareRaft;
+		}
+		cout << "Culoarea raftului: ";
+		char buffer[20];
+		usa >> buffer;
+		be.culoareRaft = new char[strlen(buffer) + 1];
+		strcpy_s(be.culoareRaft, strlen(buffer) + 1, buffer);
+		return usa;
+
+
+	}
+};
 
 
 
@@ -772,138 +930,168 @@ void main() {
 
 
 
-	// Vector de obiecte de tip Casa
-	Casa* vectorCase = new Casa[3];
-	for (int i = 0; i < 3; i++) {
-		cout << "Introduceti informatii pentru casa " << i + 1 << ":" << endl;
-		int nrCamere;
-		cout << "Numar de camere: ";
-		cin >> nrCamere;
+	//// Vector de obiecte de tip Casa
+	//Casa* vectorCase = new Casa[3];
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Introduceti informatii pentru casa " << i + 1 << ":" << endl;
+	//	int nrCamere;
+	//	cout << "Numar de camere: ";
+	//	cin >> nrCamere;
 
-		float suprafata;
-		cout << "Suprafata: ";
-		cin >> suprafata;
+	//	float suprafata;
+	//	cout << "Suprafata: ";
+	//	cin >> suprafata;
 
-		string* tipCamera = new string[nrCamere];
-		cout << "Tipurile de camere separate prin spatiu: ";
-		for (int j = 0; j < nrCamere; j++) {
-			cin >> tipCamera[j];
-		}
+	//	string* tipCamera = new string[nrCamere];
+	//	cout << "Tipurile de camere separate prin spatiu: ";
+	//	for (int j = 0; j < nrCamere; j++) {
+	//		cin >> tipCamera[j];
+	//	}
 
-		vectorCase[i] = Casa(nrCamere, suprafata, tipCamera);
-		delete[] tipCamera;
-	}
+	//	vectorCase[i] = Casa(nrCamere, suprafata, tipCamera);
+	//	delete[] tipCamera;
+	//}
 
-	// Vector de obiecte de tip Curte
-	Curte* vectorCurti = new Curte[3];
-	for (int i = 0; i < 3; i++) {
-		cout << "Introduceti informatii pentru curte " << i + 1 << ":" << endl;
-		int nrAnimale;
-		cout << "Numar de animale: ";
-		cin >> nrAnimale;
+	//// Vector de obiecte de tip Curte
+	//Curte* vectorCurti = new Curte[3];
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Introduceti informatii pentru curte " << i + 1 << ":" << endl;
+	//	int nrAnimale;
+	//	cout << "Numar de animale: ";
+	//	cin >> nrAnimale;
 
-		string* animale = new string[nrAnimale];
-		cout << "Tipurile de animale separate prin spatiu: ";
-		for (int j = 0; j < nrAnimale; j++) {
-			cin >> animale[j];
-		}
+	//	string* animale = new string[nrAnimale];
+	//	cout << "Tipurile de animale separate prin spatiu: ";
+	//	for (int j = 0; j < nrAnimale; j++) {
+	//		cin >> animale[j];
+	//	}
 
-		bool fantana;
-		cout << "Curtea are fantana? (1/0): ";
-		cin >> fantana;
+	//	bool fantana;
+	//	cout << "Curtea are fantana? (1/0): ";
+	//	cin >> fantana;
 
-		float lungime;
-		cout << "Lungimea curtii: ";
-		cin >> lungime;
+	//	float lungime;
+	//	cout << "Lungimea curtii: ";
+	//	cin >> lungime;
 
-		vectorCurti[i] = Curte(fantana, lungime, nrAnimale, animale);
-		delete[] animale;
-	}
+	//	vectorCurti[i] = Curte(fantana, lungime, nrAnimale, animale);
+	//	delete[] animale;
+	//}
 
-	// Vector de obiecte de tip Camara
-	Camara* vectorCamari = new Camara[3];
-	for (int i = 0; i < 3; i++) {
-		cout << "Introduceti informatii pentru camara " << i + 1 << ":" << endl;
-		int nrBorcane;
-		cout << "Numar de borcane: ";
-		cin >> nrBorcane;
+	//// Vector de obiecte de tip Camara
+	//Camara* vectorCamari = new Camara[3];
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Introduceti informatii pentru camara " << i + 1 << ":" << endl;
+	//	int nrBorcane;
+	//	cout << "Numar de borcane: ";
+	//	cin >> nrBorcane;
 
-		float latime;
-		cout << "Latimea camerei: ";
-		cin >> latime;
+	//	float latime;
+	//	cout << "Latimea camerei: ";
+	//	cin >> latime;
 
-		string* tipBorcan = new string[nrBorcane];
-		cout << "Tipurile de borcane separate prin spatiu: ";
-		for (int j = 0; j < nrBorcane; j++) {
-			cin >> tipBorcan[j];
-		}
+	//	string* tipBorcan = new string[nrBorcane];
+	//	cout << "Tipurile de borcane separate prin spatiu: ";
+	//	for (int j = 0; j < nrBorcane; j++) {
+	//		cin >> tipBorcan[j];
+	//	}
 
-		vectorCamari[i] = Camara(nrBorcane, latime, tipBorcan);
-		delete[] tipBorcan;
-	}
+	//	vectorCamari[i] = Camara(nrBorcane, latime, tipBorcan);
+	//	delete[] tipBorcan;
+	//}
 
-	// Matrice de obiecte de tip Casa
-	Casa** matriceCase = new Casa * [2];
-	for (int i = 0; i < 2; i++) {
-		matriceCase[i] = new Casa[2];
-		for (int j = 0; j < 2; j++) {
-			cout << "Introduceti informatii pentru casa " << i + 1 << ", rand " << j + 1 << ":" << endl;
-			int nrCamere;
-			cout << "Numar de camere: ";
-			cin >> nrCamere;
+	//// Matrice de obiecte de tip Casa
+	//Casa** matriceCase = new Casa * [2];
+	//for (int i = 0; i < 2; i++) {
+	//	matriceCase[i] = new Casa[2];
+	//	for (int j = 0; j < 2; j++) {
+	//		cout << "Introduceti informatii pentru casa " << i + 1 << ", rand " << j + 1 << ":" << endl;
+	//		int nrCamere;
+	//		cout << "Numar de camere: ";
+	//		cin >> nrCamere;
 
-			float suprafata;
-			cout << "Suprafata: ";
-			cin >> suprafata;
+	//		float suprafata;
+	//		cout << "Suprafata: ";
+	//		cin >> suprafata;
 
-			string* tipCamera = new string[nrCamere];
-			cout << "Tipurile de camere separate prin spatiu: ";
-			for (int k = 0; k < nrCamere; k++) {
-				cin >> tipCamera[k];
-			}
+	//		string* tipCamera = new string[nrCamere];
+	//		cout << "Tipurile de camere separate prin spatiu: ";
+	//		for (int k = 0; k < nrCamere; k++) {
+	//			cin >> tipCamera[k];
+	//		}
 
-			matriceCase[i][j] = Casa(nrCamere, suprafata, tipCamera);
-			delete[] tipCamera;
-		}
-	}
+	//		matriceCase[i][j] = Casa(nrCamere, suprafata, tipCamera);
+	//		delete[] tipCamera;
+	//	}
+	//}
 
-	// Afișare obiecte din vectori
-	for (int i = 0; i < 3; i++) {
-		cout << "Informatii pentru casa " << i + 1 << ":" << endl;
-		cout << vectorCase[i];
-	}
+	//// Afișare obiecte din vectori
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Informatii pentru casa " << i + 1 << ":" << endl;
+	//	cout << vectorCase[i];
+	//}
 
-	for (int i = 0; i < 3; i++) {
-		cout << "Informatii pentru curte " << i + 1 << ":" << endl;
-		cout << vectorCurti[i];
-	}
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Informatii pentru curte " << i + 1 << ":" << endl;
+	//	cout << vectorCurti[i];
+	//}
 
-	for (int i = 0; i < 3; i++) {
-		cout << "Informatii pentru camara " << i + 1 << ":" << endl;
-		cout << vectorCamari[i];
-	}
+	//for (int i = 0; i < 3; i++) {
+	//	cout << "Informatii pentru camara " << i + 1 << ":" << endl;
+	//	cout << vectorCamari[i];
+	//}
 
-	// Afișare obiecte din matrice
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 2; j++) {
-			cout << "Informatii pentru casa " << i + 1 << ", rand " << j + 1 << ":" << endl;
-			cout << matriceCase[i][j];
-		}
-	}
+	//// Afișare obiecte din matrice
+	//for (int i = 0; i < 2; i++) {
+	//	for (int j = 0; j < 2; j++) {
+	//		cout << "Informatii pentru casa " << i + 1 << ", rand " << j + 1 << ":" << endl;
+	//		cout << matriceCase[i][j];
+	//	}
+	//}
 
-	// Eliberare memorie
-	delete[] vectorCase;
-	delete[] vectorCurti;
-	delete[] vectorCamari;
-	for (int i = 0; i < 2; i++) {
-		delete[] matriceCase[i];
-	}
-	delete[] matriceCase;
+	//// Eliberare memorie
+	//delete[] vectorCase;
+	//delete[] vectorCurti;
+	//delete[] vectorCamari;
+	//for (int i = 0; i < 2; i++) {
+	//	delete[] matriceCase[i];
+	//}
+	//delete[] matriceCase;
+
+	ofstream afis("casa.txt", ios::out);
+	afis<<casa3;
+	afis.close();
+
+	ifstream cit("casa.txt", ios::in);
+	cit >> casa2;
+	cout << casa2<<endl;
+	cit.close();
+
+	Curte crt;
+	fstream curteAfisare("Curti.bin", ios::binary | ios::out);
+	curteAfisare.write((char*)&crt, sizeof(Curte));
+	curteAfisare.close();
+
+	ofstream afisare("strada.txt", ios::out);
+	afisare << strada3;
+	afisare.close();
+
+	ifstream citire("strada.txt", ios::in);
+	citire >> strada2;
+	cout << strada2 << endl;
+	citire.close();
+
+	Camara cmr;
+	fstream camaraAfisare("Camara.bin", ios::binary | ios::out);
+	camaraAfisare.write((char*)&cmr, sizeof(Camara));
+	camaraAfisare.close();
+
+	Beci b1;
+	Beci b2("Negru", 1.9, 25);
+	cout << b2;
+	Beci b3 = b1;
+	cout << b1;
+	Beci b4;
+	b4 = b2;
+	
 }
-
-
-
-
-
-
-
